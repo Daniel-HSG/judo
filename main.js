@@ -45,9 +45,9 @@ let secondWindow;
 
 function createWindows() {
   // Get all displays
-  const displays = screen.getAllDisplays()
-  const primaryDisplay = screen.getPrimaryDisplay()
-  
+  const displays = screen.getAllDisplays();
+  const primaryDisplay = screen.getPrimaryDisplay();
+
   // Create main window on primary display
   mainWindow = new BrowserWindow({
     width: 1024,
@@ -57,19 +57,19 @@ function createWindows() {
     icon: path.join(__dirname, 'icon.ico'),
     webPreferences: {
       nodeIntegration: true,
-      contextIsolation: false
+      contextIsolation: false,
     },
     // Remove menu bar
-    autoHideMenuBar: true
-  })
-  
+    autoHideMenuBar: true,
+  });
+
   // Load your HTML file
-  mainWindow.loadFile('index.html')
-  
+  mainWindow.loadFile('index.html');
+
   // If there's a second display, create a window there
   if (displays.length > 1) {
-    const secondaryDisplay = displays.find(d => d.id !== primaryDisplay.id)
-    
+    const secondaryDisplay = displays.find((d) => d.id !== primaryDisplay.id);
+
     if (secondaryDisplay) {
       secondWindow = new BrowserWindow({
         width: secondaryDisplay.size.width,
@@ -84,27 +84,35 @@ function createWindows() {
         frame: false,
         webPreferences: {
           nodeIntegration: true,
-          contextIsolation: false
-        }
-      })
-      
+          contextIsolation: false,
+        },
+      });
+
       // Load the same HTML file but with a query parameter to identify it as secondary
-      secondWindow.loadFile('index.html', { query: { "mode": "secondary" } })
-      
-      // When main window is ready, tell it to send initial data to secondary
-      mainWindow.webContents.on('did-finish-load', () => {
-        mainWindow.webContents.send('secondary-ready');
+      secondWindow.loadFile('index.html', { query: { mode: 'secondary' } });
+
+      // Wenn das Hauptfenster geschlossen wird, schließe auch das sekundäre Fenster
+      mainWindow.on('closed', () => {
+        if (secondWindow && !secondWindow.isDestroyed()) {
+          secondWindow.close();
+        }
+        mainWindow = null;
+      });
+
+      // Wenn das sekundäre Fenster geschlossen wird, entferne die Referenz
+      secondWindow.on('closed', () => {
+        secondWindow = null;
       });
     }
   }
-  
+
   // Set up communication between windows
   ipcMain.on('update-display', (event, data) => {
     if (secondWindow && !secondWindow.isDestroyed()) {
       secondWindow.webContents.send('update-from-main', data);
     }
   });
-  
+
   // Add keyboard shortcut to toggle fullscreen on main window
   mainWindow.webContents.on('did-finish-load', () => {
     mainWindow.webContents.executeJavaScript(`
@@ -115,12 +123,12 @@ function createWindows() {
       });
     `);
   });
-  
+
   // Handle fullscreen toggle request
   ipcMain.on('toggle-fullscreen-main', () => {
     mainWindow.setFullScreen(!mainWindow.isFullScreen());
   });
-  
+
   // Set up communication for zoom controls
   ipcMain.on('zoom-in', () => {
     console.log('Zoom in requested for secondary window');
@@ -129,7 +137,7 @@ function createWindows() {
       secondWindow.webContents.setZoomFactor(currentZoom + 0.1);
     }
   });
-  
+
   ipcMain.on('zoom-out', () => {
     console.log('Zoom out requested for secondary window');
     if (secondWindow && !secondWindow.isDestroyed()) {
@@ -137,32 +145,12 @@ function createWindows() {
       secondWindow.webContents.setZoomFactor(Math.max(0.5, currentZoom - 0.1));
     }
   });
-  
+
   ipcMain.on('zoom-reset', () => {
     console.log('Zoom reset requested for secondary window');
     if (secondWindow && !secondWindow.isDestroyed()) {
       secondWindow.webContents.setZoomFactor(1.0);
     }
-  });
-  
-  // Zeige Update-Status im Hauptfenster an (optional)
-  autoUpdater.on('checking-for-update', () => {
-    log.info('Prüfe auf Updates...');
-  });
-  
-  autoUpdater.on('update-available', (info) => {
-    log.info(`Update verfügbar: ${info.version}`);
-  });
-  
-  autoUpdater.on('update-not-available', (info) => {
-    log.info(`Kein Update verfügbar. Aktuelle Version: ${info.version}`);
-  });
-  
-  autoUpdater.on('download-progress', (progressObj) => {
-    let logMessage = `Download-Geschwindigkeit: ${progressObj.bytesPerSecond}`;
-    logMessage = `${logMessage} - Heruntergeladen: ${progressObj.percent}%`;
-    logMessage = `${logMessage} (${progressObj.transferred}/${progressObj.total})`;
-    log.info(logMessage);
   });
 }
 
