@@ -39,6 +39,7 @@ function setupAutoUpdater() {
     log.error('Fehler beim Auto-Update:', err)
   })
 }
+
 let mainWindow;
 let secondWindow;
 
@@ -143,19 +144,48 @@ function createWindows() {
       secondWindow.webContents.setZoomFactor(1.0);
     }
   });
+  
+  // Zeige Update-Status im Hauptfenster an (optional)
+  autoUpdater.on('checking-for-update', () => {
+    log.info('Prüfe auf Updates...');
+  });
+  
+  autoUpdater.on('update-available', (info) => {
+    log.info(`Update verfügbar: ${info.version}`);
+  });
+  
+  autoUpdater.on('update-not-available', (info) => {
+    log.info(`Kein Update verfügbar. Aktuelle Version: ${info.version}`);
+  });
+  
+  autoUpdater.on('download-progress', (progressObj) => {
+    let logMessage = `Download-Geschwindigkeit: ${progressObj.bytesPerSecond}`;
+    logMessage = `${logMessage} - Heruntergeladen: ${progressObj.percent}%`;
+    logMessage = `${logMessage} (${progressObj.transferred}/${progressObj.total})`;
+    log.info(logMessage);
+  });
 }
 
 app.whenReady().then(() => {
   // Hide the menu bar for the entire application
   app.applicationMenu = null;
   
-  createWindows()
+  createWindows();
+  
+  // Setup auto-updater
+  setupAutoUpdater();
   
   app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindows()
-  })
-})
+    if (BrowserWindow.getAllWindows().length === 0) createWindows();
+  });
+});
 
 app.on('window-all-closed', function () {
-  if (process.platform !== 'darwin') app.quit()
-})
+  if (process.platform !== 'darwin') app.quit();
+});
+
+// Zusätzliche Ereignisbehandlung für Updates
+app.on('ready', function() {
+  // Wenn die App bereit ist, prüfe auf Updates
+  autoUpdater.checkForUpdatesAndNotify();
+});
