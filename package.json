@@ -1,0 +1,36 @@
+{
+    "name": "judo-scoreboard",
+    "version": "1.0.0",
+    "description": "Judo Scoreboard Application",
+    "main": "main.js",
+    "scripts": {
+        "start": "electron .",
+        "build": "electron-builder --win portable"
+    },
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "electron": "^29.0.0",
+        "electron-builder": "^26.0.12"
+    },
+    "build": {
+  "appId": "com.Daniel.judo-scoreboard",
+  "productName": "Judo Scoreboard",
+  "win": {
+    "target": ["nsis"],
+    "icon": "./icon.ico"
+  },
+  "nsis": {
+    "oneClick": true,
+    "allowElevation": true,
+    "allowToChangeInstallationDirectory": false,
+    "createDesktopShortcut": true,
+    "runAfterFinish": true
+  },
+  "publish": {
+    "provider": "generic",
+    "url": "https://deine-netlify-site.netlify.app/updates"
+  }
+}
+
+}

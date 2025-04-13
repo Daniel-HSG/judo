@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+<html lang="en" class="main">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Judo Scoreboard</title>
+    <style>
+        html {
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            font-weight: 900;
+        }
+        
+        .onlymain:not(.main .onlymain) {
+            display: none;
+        }
+        .background{
+            background-color:  white;
+        }
+        .blau{
+            background-color: blue;
+            position: absolute;
+            bottom:0;
+            right: 0;
+            height:100%;
+            width: 50%;
+            z-index: -100;
+        }
+        .secondary .blau {
+            left: 0;
+            right: auto;
+        }
+        .headline{
+            background-color: black;
+            position: absolute;
+            color: yellow;
+            font-size: 40px;
+            text-align: center;
+            left: 0;
+            width:100%;
+            top: 0;
+            z-index: 100;
+        }
+
+        .matteinput {
+            position: absolute;
+            top: 7px;
+            left: 56px;
+            width: 100px;
+            font-size: 20px;
+            z-index: 101;
+            color: yellow;
+        }
+        .secondary .matteinput {
+            left: 0;
+        }
+
+        .videoinput {
+            position: absolute;
+            top: 7px;
+            left: 180px;
+            font-size: 20px;
+            font-weight: normal;
+            z-index: 101;
+            color: yellow;
+        }
+
+        .controls {
+            position: absolute;
+            background-color: #888888;
+            left: 33%;
+            right: 33%;
+            top: 33%;
+            bottom: 33%;
+            border-radius: 10px;
+        }
+
+        .timercontrols {
+            position: absolute;
+            background-color: #888888;
+            left: calc(33% + 8%);
+            right: calc(33% + 8%);
+            top: calc(100% - 33%);
+            border-radius: 0 0 10px 10px;
+            padding: 10px;
+            display: flex;
+            justify-content: space-around;
+        }
+        .punkteblau, .punkteweis {
+    position: absolute;
+    font-size: 2000%;
+    bottom: 27%;
+    animation-delay: 1s;
+}
+.main .punkteblau{
+    color: white;
+    right: 3%; /* Aligned with haltenblau on main display */
+}
+.secondary .punkteblau {
+    left: 10%; /* Keep original position on secondary display */
+    color: white;
+    right: auto;
+}
+.main .punkteweis{
+    color: black;
+    left: 3%; /* Aligned with haltenweis on main display */
+}
+.secondary .punkteweis {
+    left: auto;
+    color: black;
+    right: 10%; /* Keep original position on secondary display */
+}
+
+
+        .haltenblau, .haltenweis {
+            position: absolute;
+            border-radius: 10px;
+            padding: 0px 6px;
+            font-size: 500%;
+            text-align: center;
+            top: 15%
+        }
+        .haltenblau{
+            background-color: white;
+            color: black;
+            right: 5%;
+        }
+        .secondary .haltenblau {
+            left: 5%;
+            right: auto;
+        }
+        .haltenweis{
+            background-color: blue;
+            color: white;
+            left: 5%;
+        }
+        .secondary .haltenweis {
+            left: auto;
+            right: 5%;
+        }
+        .place1{
+            bottom:0;
+            left: 30%;
+            width:40%;
+            text-align: center;
+            font-size: 120px;
+            border-radius: 10px 10px 0 0;
+            color: red;
+            background-color: black;
+            position: absolute
+        }
+
+        .weiterbutton {
+            position: absolute;
+            bottom: 2%;
+            left: 37.5% ;
+            width: 25%;
+            font: inherit;
+            font-size: 30px;
+            text-align: center;
+            background: transparent;
+            border-color: transparent;
+        }
+
+        .anzeigebutton{
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 40px;
+            height: auto;
+            z-index: 101;
+        }
+
+        .winnerb, .winnerw, .winneru {
+            position: absolute;
+            font-size: 150px;
+            bottom:40%;
+            visibility:hidden;
+        }
+        .winnerb{
+            color:white;
+            right: 1%;
+        }
+        .secondary .winnerb {
+            left: 1%;
+            right: auto;
+        }
+        .winnerw{
+            color:black;
+            left: 1%;
+        }
+        .secondary .winnerw {
+            left: auto;
+            right: 1%;
+        }
+        .winneru {
+            color: black;
+            text-align: center;
+            left: 0;
+            right: 0;
+        }
+
+        .haupttimerreset, .pause, .haupttimerinput {
+            font-size: 30px;
+        }
+
+        .haupttimerinput {
+            width: 2.5em;
+            text-align: center;
+        }
+
+        .haltebweis, .haltebblau {
+            position: absolute;
+            font-size: 30px;
+            bottom: calc(50% + 30px)
+        }
+        .haltebblau {
+            color: white;
+            right: 15%;
+        }
+        .haltebweis {
+            color: black;
+            left: 15%;
+        }
+
+        .ipponb, .wazarib, .yukob, .ipponw, .wazariw, .yukow, .shidob, .shidow {
+            position: absolute;
+            font-size: 30px;
+            bottom:50%
+        }
+        .ipponb{
+            color: white;
+            right: 15%;
+        }
+        .wazarib{
+            color: white;
+            right: 24%;
+        }
+        .yukob{
+            color: white;
+            right: 33%;
+        }
+        .shidob{
+            color: white;
+            right: 42%;
+        }
+        .ipponw{
+            color: black;
+            left: 15%;
+        }
+        .wazariw{
+            color: black;
+            left: 23%;
+        }
+        .yukow{
+            color: black;
+            left: 33%;
+        }
+        .shidow{
+            color: black;
+            left: 42%;
+        }
+
+        .minusb, .minusw {
+            position: absolute;
+            font-size: 30px;
+            top: 50%;
+            z-index: 100000000
+        }
+        .minusb{
+            color: white;
+            right: 15%;
+        }
+        .minusw{
+            color: white;
+            left: 15%;
+        }
+
+        .punktebn, .punktewn {
+            position: absolute;
+            font-size: 30px;
+            top: 50%;
+            z-index: 100000000
+        }
+        .punktebn{
+            color: white;
+            right: 24%;
+        }
+        .punktewn{
+            color: white;
+            left: 24%;
+        }
+
+        #videooverlay {
+            position: absolute;
+            z-index: 100000001;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: lightgray;
+        }
+        #video {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        #skipvideo {
+            position: fixed;
+            left: 10px;
+            bottom: 10px;
+        }
+
+        .input {
+            background-color: transparent;
+            border-color: transparent;
+        }
+        .input:focus {
+            background: revert;
+            border: revert;
+            color: revert;
+        }
+        .input:invalid {
+            color: red;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .blinkanim {
+            animation-name:blinkanimation;
+            animation-duration:2s;
+            animation-iteration-count: infinite;
+            animation-timing-function: steps(2,jump-none);
+        }
+        @keyframes blinkanimation {
+            from {
+                visibility: hidden;
+            }
+            to {
+                visibility: visible;
+            }
+    }
+    .zoom-controls {
+  position: absolute;
+  top: 7px;
+  right: 10px;
+  display: flex;
+  gap: 5px;
+  z-index: 102;
+}
+
+.zoom-button {
+  background-color: #333;
+  color: yellow;
+  border: none;
+  border-radius: 4px;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zoom-button:hover {
+  background-color: #555;
+}
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.7);
+}
+
+.modal-content {
+  background-color: white;
+  margin: 15% auto;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+  text-align: center;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  color: black;
+}
+
+.modal-content input {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin: 20px 0;
+  font-size: 20px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.modal-content button {
+  background-color: blue;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.modal-content button:hover {
+  background-color: darkblue;
+}
+
+
+/* Animation ################################################################################### */
+/* Basis-Styling für die Matte-Animation */
+.matte-animation {
+  position: absolute;
+  z-index: 100000001;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.matte-container {
+  position: relative;
+}
+
+/* Styling für die sekundäre Anzeige */
+.secondary .matte-number {
+  color: white;
+  font-size: 180px;
+  font-weight: 900;
+  text-align: center;
+  position: relative;
+  font-family: 'Montserrat', sans-serif;
+  letter-spacing: -2px;
+  text-transform: uppercase;
+  animation: flyInPulseOut 6s ease-in-out infinite;
+}
+
+/* Animationen */
+@keyframes flyInPulseOut {
+  /* Einflug von außerhalb des Bildschirms */
+  0% {
+    transform: translateX(-100vw) scale(0.8);
+    opacity: 0;
+  }
+  
+  /* Ankunft in der Mitte */
+  15% {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+  
+  /* Pulsieren in der Mitte */
+  20%, 60% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  
+  30% {
+    transform: scale(1.15);
+  }
+  
+  /* Ausblenden und Verschwinden */
+  50% {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+  
+  65% {
+    transform: translateX(100vw) scale(0.8);
+    opacity: 0;
+  }
+  
+  /* Pause vor dem nächsten Durchlauf */
+  66%, 100% {
+    transform: translateX(-100vw) scale(0.8);
+    opacity: 0;
+  }
+}
+
+/* Animation ################################################################################### */
+
+
+.kampfStartenButton {
+  position: absolute;
+  bottom: 24%;
+  left: 33%;
+  right: 33%;
+  top: 24%;
+  width: auto;
+  font: inherit;
+  font-size: 30px;
+  text-align: center;
+  background-color: gray;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 100000000000000000000000;
+}
+
+.kampfStartenButton:hover {
+  background-color: darkgreen;
+}
+.secondary .matte-animation {
+  animation: none !important; /* Remove fade animation for secondary display */
+  opacity: 1 !important; /* Keep fully visible */
+}
+.animation-button{
+  background-color: #333;
+  color: yellow;
+  border: none;
+  border-radius: 4px;
+  width: 100px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.animation-button:hover{
+  background-color: #555;
+}
+
+
+    </style>
+    <script>
+        class Timer {
+            static #rootTimer = {
+                getTime: () => new Date().getTime(),
+                setTimeout: (func, timeout) => setTimeout(func, timeout),
+                clearTimeout: (id) => clearTimeout(id),
+            }
+            #accumulatedTime = 0;
+            #lastTimestamp;
+            #paused = true;
+            #parent;
+            #timeouts = {};
+            #schedules = {};
+            #timeoutids = 0;
+            constructor(parent = Timer.#rootTimer) {
+                this.#parent = parent;
+                this.#lastTimestamp = parent.getTime();
+            }
+            getTime() {
+                const timestamp = this.#parent.getTime();
+                if (!this.#paused) {
+                    this.#accumulatedTime += timestamp - this.#lastTimestamp;
+                    this.#lastTimestamp = timestamp;
+                }
+                return this.#accumulatedTime;
+            }
+            pause() {
+                if (!this.#paused) {
+                    this.#accumulatedTime = this.getTime();
+                    this.#paused = true;
+                }
+                for (let id in this.#timeouts) {
+                    const parentId = this.#timeouts[id].parentId;
+                    this.#parent.clearTimeout(parentId);
+                }
+            }
+            resume() {
+                if (this.#paused) {
+                    this.#lastTimestamp = this.#parent.getTime();
+                    this.#paused = false;
+                }
+                const time = this.getTime();
+                for (let id in this.#timeouts) {
+                    this.#timeouts[id].parentId = this.#parent.setTimeout(
+                        this.#timeouts[id].handler,
+                        this.#timeouts[id].endTime - time
+                    );
+                }
+            }
+            reset() {
+                this.#lastTimestamp = this.#parent.getTime();
+                this.#accumulatedTime = 0;
+                for (let id in this.#timeouts) {
+                    this.clearTimeout(id);
+                }
+                for (let id in this.#schedules) {
+                    this.#schedules[id].timeoutId = this.setTimeout(
+                        this.#schedules[id].handler,
+                        this.#schedules[id].time
+                    );
+                }
+            }
+            paused() {
+                return this.#paused;
+            }
+            setTimeout(func, timeout) {
+                const id = this.#timeoutids++;
+                const handler = () => {
+                    delete this.#timeouts[id];
+                    func();
+                };
+                const endTime = this.getTime() + timeout;
+                let parentId = undefined;
+                if (!this.paused()) {
+                    parentId = this.#parent.setTimeout(handler, timeout);
+                }
+                this.#timeouts[id] = {
+                    handler: handler,
+                    endTime: endTime,
+                    parentId: parentId,
+                };
+                return id;
+            }
+            setSchedule(func, time) {
+                const timeoutId = this.setTimeout(func, time - this.getTime());
+                const id = this.#timeoutids++;
+                this.#schedules[id] = {
+                    handler: func,
+                    time: time,
+                    timeoutId: timeoutId,
+                }
+                return id;
+            }
+            clearTimeout(id) {
+                if (this.#timeouts[id] != undefined) {
+                    this.#parent.clearTimeout(this.#timeouts[id].parentId);
+                }
+                delete this.#timeouts[id];
+            }
+            clearSchedule(id) {
+                if (this.#schedules[id] != undefined) {
+                    this.clearTimeout(this.#schedules[id].timeoutId);
+                }
+                delete this.#schedules[id];
+            }
+        }
+
+        function konvertiereZeitZuText(millisekunden) {
+            millisekunden = Math.max(0, millisekunden);
+            const minutes = Math.floor(millisekunden / (1000*60));
+            const seconds = Math.floor((millisekunden/1000) % 60);
+            if (seconds < 10) {
+                return minutes + " : 0" + seconds;
+            } else {
+                return minutes + " : " + seconds;
+            }
+        }
+
+        function padString(text, laenge, zeichen=" ") {
+            const string = "" + text;
+            if (string.length >= laenge) {
+                return string;
+            }
+            return zeichen.repeat(laenge - string.length) + string;
+        }
+
+        let punkteblau = 0
+        let punkteweis = 0
+        let winnerblau = false
+        let winnerweis = false
+        let kampfzeit = 120 * 1000
+        let mpunkteweis = 0
+        let mpunkteblau = 0
+        let hauptTimer = new Timer();
+        let halteTimerW = new Timer(hauptTimer);
+        let halteTimerB = new Timer(hauptTimer);
+        let sblau = false
+        let sweis = false
+        let unentschieden = false
+        let anzeige = null;
+
+        function updateHauptTimer() {
+            const zeit = hauptTimer.getTime();
+            timer.innerHTML = konvertiereZeitZuText(kampfzeit - zeit);
+            if (anzeige !== null) anzeige.timer.innerHTML = timer.innerHTML
+            if (!hauptTimer.paused()) {
+                timer.style.color = "yellow"
+                haupttimerinput.disabled = true;
+            } else {
+                timer.style.color = "red"
+                haupttimerinput.disabled = !(zeit === 0);
+            }
+            if (anzeige !== null) anzeige.timer.style.color = timer.style.color
+        }
+
+        function updateHalteTimerW() {
+            const zeit = Math.min(20, Math.ceil(halteTimerW.getTime() / 1000));
+            hweis.innerHTML = padString(zeit, 2, "0");
+            if (anzeige !== null) anzeige.hweis.innerHTML = hweis.innerHTML
+        }
+
+        function updateHalteTimerB() {
+            const zeit = Math.min(20, Math.ceil(halteTimerB.getTime() / 1000));
+            hblau.innerHTML = padString(zeit, 2, "0");
+            if (anzeige !== null) anzeige.hblau.innerHTML = hblau.innerHTML
+        }
+
+        function updatePunkteB() {
+            pblau.innerHTML = padString(punkteblau, 2, "0");
+            if (anzeige !== null) anzeige.pblau.innerHTML = pblau.innerHTML;
+            if (punkteblau >= 20) {
+                fzeitlauft();
+                weiterbutton.classList.remove("hidden");
+                if (!halteTimerB.paused()) {
+                    buzzer.play(); // Play sound when points reach 20 due to Haltegriff
+                }
+            }
+        }
+
+        function updatePunkteW() {
+            pweis.innerHTML = padString(punkteweis, 2, "0");
+            if (anzeige !== null) anzeige.pweis.innerHTML = pweis.innerHTML;
+            if (punkteweis >= 20) {
+                fzeitlauft();
+                weiterbutton.classList.remove("hidden");
+                if (!halteTimerW.paused()) {
+                    buzzer.play(); // Play sound when points reach 20 due to Haltegriff
+                }
+            }
+        }
+
+        function updateMatte() {
+            const matte = matteinput.value;
+            if (anzeige !== null) anzeige.matteinput.value = matte;
+        }
+
+        function updateVideo() {
+            video.src = URL.createObjectURL(videoinput.files[0]);
+            if (anzeige !== null) anzeige.video.src = video.src;
+        }
+        // Replace the playVideo function with this
+        function playMatteAnimation() {
+  const matteNumber = matteinput.value || "1";
+  
+  // Show ONLY the start button on main display (no animation)
+  const kampfStartenButton = document.getElementById('kampfStartenButton');
+  if (kampfStartenButton) {
+    kampfStartenButton.classList.remove("hidden");
+  }
+  
+  // Keep the animation hidden on the main window
+  const animationElement = document.getElementById('matteAnimation');
+  if (animationElement) {
+    animationElement.classList.add("hidden"); // Ensure it stays hidden
+  }
+  
+  // If we're in Electron, update the secondary window to show animation
+  if (typeof require !== 'undefined') {
+    try {
+      const { ipcRenderer } = require('electron');
+      ipcRenderer.send('update-display', { 
+        showMatteAnimation: true,
+        matteNumber: matteNumber
+      });
+    } catch (error) {
+      console.error('Error updating secondary window:', error);
+    }
+  }
+}
+
+
+
+// Function to hide matte animation and start the match
+function startKampf() {
+  console.log("startKampf function called");
+  
+  // Hide the start button
+  const kampfStartenButton = document.getElementById('kampfStartenButton');
+  if (kampfStartenButton) {
+    console.log("Hiding start button");
+    kampfStartenButton.classList.add("hidden");
+  } else {
+    console.log("Start button not found");
+  }
+  
+  // Hide the animation on the main window
+  const animationElement = document.getElementById('matteAnimation');
+  if (animationElement) {
+    console.log("Hiding animation");
+    animationElement.classList.add("hidden");
+  } else {
+    console.log("Animation element not found");
+  }
+  
+  // If we're in Electron, update the secondary window to hide animation
+  if (typeof require !== 'undefined') {
+    try {
+      console.log("Sending update to secondary display");
+      const { ipcRenderer } = require('electron');
+      ipcRenderer.send('update-display', { 
+        showMatteAnimation: false
+      });
+    } catch (error) {
+      console.error('Error updating secondary window:', error);
+    }
+  }
+  
+  // Reset match data (same as in buttonweiter function)
+  winnerblau = false;
+  winnerweis = false;
+  unentschieden = false;
+  punkteblau = 0;
+  punkteweis = 0;
+  updatePunkteW();
+  updatePunkteB();
+  ww.classList.remove("blinkanim");
+  wb.classList.remove("blinkanim");
+  wu.classList.remove("blinkanim");
+  pweis.classList.remove("blinkanim");
+  pblau.classList.remove("blinkanim");
+  if (anzeige !== null) {
+    anzeige.ww.classList.remove("blinkanim");
+    anzeige.wb.classList.remove("blinkanim");
+    anzeige.wu.classList.remove("blinkanim");
+    anzeige.pweis.classList.remove("blinkanim");
+    anzeige.pblau.classList.remove("blinkanim");
+  }
+  weiterbutton.classList.add("hidden");
+  mpunkteweis = 0;
+  mpunkteblau = 0;
+  halteTimerW.pause();
+  halteTimerB.pause();
+  halteTimerW.reset();
+  halteTimerB.reset();
+  updateHalteTimerW();
+  updateHalteTimerB();
+  hauptTimer.pause();
+  hauptTimer.reset();
+  updateHauptTimer();
+}
+
+
+// Replace the videoEnde function with this
+function animationEnde() {
+  playMatteAnimation();
+}
+
+// Replace the stopVideo function with this
+function stopAnimation() {
+  const animationElement = document.getElementById('matteAnimation');
+  if (animationElement) {
+    animationElement.classList.add("hidden");
+  }
+  if (anzeige !== null) {
+    anzeige.matteAnimation.classList.add("hidden");
+  }
+}
+
+// Update the buttonweiter function to use the animation
+function buttonweiter() {
+    if ((winnerweis == true) || (winnerblau == true) || (unentschieden == true)) {
+        // Second click: reset everything
+        
+        
+        // Hide winner displays
+        wb.style.visibility = "hidden";
+        ww.style.visibility = "hidden";
+        wu.style.visibility = "hidden";
+        
+        // Remove animations
+        ww.classList.remove("blinkanim");
+        wb.classList.remove("blinkanim");
+        wu.classList.remove("blinkanim");
+        pweis.classList.remove("blinkanim");
+        pblau.classList.remove("blinkanim");
+        
+        if (anzeige !== null) {
+            anzeige.wb.style.visibility = "hidden";
+            anzeige.ww.style.visibility = "hidden";
+            anzeige.wu.style.visibility = "hidden";
+            anzeige.ww.classList.remove("blinkanim");
+            anzeige.wb.classList.remove("blinkanim");
+            anzeige.wu.classList.remove("blinkanim");
+            anzeige.pweis.classList.remove("blinkanim");
+            anzeige.pblau.classList.remove("blinkanim");
+        }
+        
+        
+        // Show the matte animation and start button
+        playMatteAnimation();
+    } else if (punkteblau >= 20 || punkteweis >= 20 || hauptTimer.getTime() >= kampfzeit) {
+        // First click: show winner
+        if (punkteblau > punkteweis) {
+            winnerblau = true;
+            wb.classList.add("blinkanim");
+            wb.style.visibility = "visible";
+            pblau.classList.add("blinkanim");
+            if (anzeige !== null) {
+                anzeige.wb.classList.add("blinkanim");
+                anzeige.wb.style.visibility = "visible";
+                anzeige.pblau.classList.add("blinkanim");
+            }
+        } else if (punkteweis > punkteblau) {
+            winnerweis = true;
+            ww.classList.add("blinkanim");
+            ww.style.visibility = "visible";
+            pweis.classList.add("blinkanim");
+            if (anzeige !== null) {
+                anzeige.ww.classList.add("blinkanim");
+                anzeige.ww.style.visibility = "visible";
+                anzeige.pweis.classList.add("blinkanim");
+            }
+        } else {
+            unentschieden = true;
+            wu.classList.add("blinkanim");
+            wu.style.visibility = "visible";
+            pweis.classList.add("blinkanim");
+            pblau.classList.add("blinkanim");
+            if (anzeige !== null) {
+                anzeige.wu.classList.add("blinkanim");
+                anzeige.wu.style.visibility = "visible";
+                anzeige.pblau.classList.add("blinkanim");
+                anzeige.pweis.classList.add("blinkanim");
+            }
+        }
+    }
+}
+
+
+
+       function ipponblau(){
+            mpunkteblau = punkteblau
+            sblau = false
+            hauptTimer.pause();
+            updateHauptTimer();
+           if ((punkteblau) > (10)){
+               punkteblau = 20
+           }else{
+               punkteblau = punkteblau + 10
+           }
+            updatePunkteB();
+       }
+        function ipponweis(){
+            mpunkteweis = punkteweis
+            sweis= false
+            hauptTimer.pause();
+            updateHauptTimer();
+           if ((punkteweis) > (10)){
+               punkteweis = 20
+           }else{
+               punkteweis = punkteweis + 10
+           }
+            updatePunkteW();
+        }
+        function wazariblau(){
+            mpunkteblau = punkteblau
+            sblau = false
+            if ((punkteblau) > (15)){
+               punkteblau = 20
+           }else{
+               punkteblau = punkteblau + 5
+           }
+            updatePunkteB();
+        }
+        function wazariweis(){
+            mpunkteweis = punkteweis
+            sweis = false
+            if ((punkteweis) > (15)){
+               punkteweis = 20
+           }else{
+               punkteweis = punkteweis + 5
+            }
+            updatePunkteW();
+        }
+        function yukoblau() {
+            mpunkteblau = punkteblau;
+            sblau = false;
+            if ((punkteblau) > (17)) {
+                punkteblau = 20; // Cap at 20 points
+            } else {
+                punkteblau = punkteblau + 3; // Yuko is worth 3 points
+            }
+            updatePunkteB();
+        }
+
+        function yukoweis() {
+            mpunkteweis = punkteweis;
+            sweis = false;
+            if ((punkteweis) > (17)) {
+                punkteweis = 20; // Cap at 20 points
+            } else {
+                punkteweis = punkteweis + 3; // Yuko is worth 3 points
+            }
+            updatePunkteW();
+        }
+        function shidoblau(){
+            mpunkteweis = punkteweis
+            sblau = true
+            if ((punkteweis) > (18)){
+               punkteweis = 20
+           }else{
+               punkteweis = punkteweis + 2
+            } 
+            updatePunkteW();
+        }
+        function shidoweis(){
+            mpunkteblau = punkteblau
+            sweis = true
+            if ((punkteblau) > (18)){
+               punkteblau = 20
+           }else{
+               punkteblau = punkteblau + 2
+            }
+            updatePunkteB();
+        }
+        function minusblau(){
+            if (sblau ==true){
+                punkteweis = mpunkteweis
+                sblau = false
+                updatePunkteW();
+            }else{
+                punkteblau = mpunkteblau
+                updatePunkteB();
+            }
+        }
+        function minusweis(){
+            if(sweis == true){
+                punkteblau = mpunkteblau 
+                sweis = false
+                updatePunkteB();
+            }else{
+                punkteweis = mpunkteweis
+                updatePunkteW();
+            }
+        }
+        function haltenblau(){
+            if (halteTimerB.paused() & !hauptTimer.paused()) {
+                halteTimerB.resume();
+            } else{
+                halteTimerB.pause();
+                halteTimerB.reset();
+            }
+            updateHalteTimerB();
+        }
+        function haltenweis(){
+            if (halteTimerW.paused() & !hauptTimer.paused()) {
+                halteTimerW.resume();
+            } else{
+                halteTimerW.pause();
+                halteTimerW.reset();
+            }
+            updateHalteTimerW();
+        }
+
+        function resetHauptTimer() {
+            hauptTimer.pause();
+            hauptTimer.reset();
+            updateHauptTimer();
+        }
+
+        function setKampfZeit() {
+            if (haupttimerinput.validity.valid) {
+                const value = haupttimerinput.value;
+                const minuten = Number(value.split(":")[0].trim());
+                const sekunden = Number(value.split(":")[1].trim());
+                kampfzeit = 1000 * (60 * minuten + sekunden);
+                updateHauptTimer();
+            }
+        }
+
+        function fzeitlauft(){
+            if ((hauptTimer.paused())& (punkteblau < 20) & (punkteweis < 20)){
+                hauptTimer.resume();
+                updateHauptTimer();
+                if ((halteTimerB.getTime() >= 20000 )|(halteTimerW.getTime() >= 20000)){
+                    halteTimerW.pause();
+                    halteTimerB.pause();
+                    halteTimerW.reset();
+                    halteTimerB.reset();
+                    updateHalteTimerW();
+                    updateHalteTimerB();
+                }
+            } else {
+                hauptTimer.pause();
+                updateHauptTimer();
+            }
+        }
+        function punktebenull(){
+            punkteblau=0
+            updatePunkteB();
+        }
+        function punktewenull(){
+            punkteweis=0
+            updatePunkteW();
+        }
+
+        window.addEventListener("keypress", e => {
+            if (e.key === " ") {
+                fzeitlauft();
+            }
+        });
+
+        // Haltegriff logic for awarding points
+        halteTimerW.setSchedule(() => {
+            yukoweis(); // Award Yuko after 10 seconds for white
+        }, 10000);
+        halteTimerB.setSchedule(() => {
+            yukoblau(); // Award Yuko after 10 seconds for blue
+        }, 10000);
+
+        halteTimerW.setSchedule(() => {
+            punkteweis -= 3; // Remove Yuko points
+            wazariweis(); // Award Waza-ari after 15 seconds
+        }, 15000);
+        halteTimerB.setSchedule(() => {
+            punkteblau -= 3; // Remove Yuko points
+            wazariblau(); // Award Waza-ari after 15 seconds
+        }, 15000);
+
+        halteTimerW.setSchedule(() => {
+            punkteweis -= 5; // Remove Waza-ari points
+            ipponweis(); // Award Ippon after 20 seconds
+            if (punkteweis >= 20 || halteTimerW.getTime() >= 20000) {
+                buzzer.play(); // Play sound if 20 points are reached due to Haltegriff or 20 seconds reached
+            }
+            updatePunkteW();
+        }, 20000);
+        halteTimerB.setSchedule(() => {
+            punkteblau -= 5; // Remove Waza-ari points
+            ipponblau(); // Award Ippon after 20 seconds
+            if (punkteblau >= 20 || halteTimerB.getTime() >= 20000) {
+                buzzer.play(); // Play sound if 20 points are reached due to Haltegriff or 20 seconds reached
+            }
+            updatePunkteB();
+        }, 20000);
+
+        function kampfEnde() {
+            if (!halteTimerB.paused()) {
+                hauptTimer.setTimeout(kampfEnde, 20 - halteTimerB.getTime());
+            } else if (!halteTimerW.paused()) {
+                hauptTimer.setTimeout(kampfEnde, 20 - halteTimerW.getTime());
+            } else {
+                hauptTimer.pause();
+                updateHauptTimer();
+                buzzer.play();
+                weiterbutton.classList.remove("hidden");
+            }
+        }
+        hauptTimer.setSchedule(() => hauptTimer.setTimeout(kampfEnde, kampfzeit), 0);
+
+        function halteTimerWTick() {
+            updateHalteTimerW();
+            halteTimerW.setTimeout(halteTimerWTick, 1000 - (halteTimerW.getTime() % 1000) + 1);
+        }
+        function halteTimerBTick() {
+            updateHalteTimerB();
+            halteTimerB.setTimeout(halteTimerBTick, 1000 - (halteTimerB.getTime() % 1000) + 1);
+        }
+        function hauptTimerTick() {
+            updateHauptTimer();
+            hauptTimer.setTimeout(hauptTimerTick, 1000 - (hauptTimer.getTime() % 1000) + 1);
+        }
+        hauptTimer.setSchedule(hauptTimerTick, 0);
+        halteTimerW.setSchedule(halteTimerWTick, 0);
+        halteTimerB.setSchedule(halteTimerBTick, 0);
+        // Check if this is the secondary window
+window.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const mode = urlParams.get('mode');
+  
+  if (mode === 'secondary') {
+    // This is the secondary window
+    document.documentElement.classList.remove("main");
+    document.documentElement.classList.add("secondary");
+  }
+});
+// Check if Electron is available
+if (typeof require !== 'undefined') {
+  const { ipcRenderer } = require('electron');
+  
+  // Check if this is the secondary window
+  window.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode');
+    
+    if (mode === 'secondary') {
+      // This is the secondary window
+      document.documentElement.classList.remove("main");
+      document.documentElement.classList.add("secondary");
+      
+      // Listen for updates from the main window
+      ipcRenderer.on('update-from-main', (event, data) => {
+  // Update the display based on received data
+  if (data.punkteblau !== undefined) {
+    punkteblau = data.punkteblau;
+    pblau.innerHTML = padString(punkteblau, 2, "0");
+  }
+  
+  if (data.punkteweis !== undefined) {
+    punkteweis = data.punkteweis;
+    pweis.innerHTML = padString(punkteweis, 2, "0");
+  }
+  
+  if (data.timer !== undefined) {
+    timer.innerHTML = data.timer;
+    timer.style.color = data.timerColor;
+  }
+  
+  if (data.halteTimerW !== undefined) {
+    hweis.innerHTML = data.halteTimerW;
+  }
+  
+  if (data.halteTimerB !== undefined) {
+    hblau.innerHTML = data.halteTimerB;
+  }
+  
+  if (data.matte !== undefined) {
+    matteinput.value = data.matte;
+  }
+  
+  // Update headline
+  if (data.headline !== undefined) {
+    const headline = document.querySelector('.headline');
+    if (headline) {
+      headline.textContent = data.headline;
+    }
+  }
+  
+  // Handle winner animations
+  if (data.winnerBlau) {
+    wb.classList.add("blinkanim");
+    wb.style.visibility = "visible";
+    pblau.classList.add("blinkanim"); // Add animation to points
+  } else {
+    wb.classList.remove("blinkanim");
+    wb.style.visibility = "hidden";
+    if (!data.winnerWeis && !data.unentschieden) {
+      pblau.classList.remove("blinkanim"); // Remove animation if no winner
+    }
+  }
+  
+  if (data.winnerWeis) {
+    ww.classList.add("blinkanim");
+    ww.style.visibility = "visible";
+    pweis.classList.add("blinkanim"); // Add animation to points
+  } else {
+    ww.classList.remove("blinkanim");
+    ww.style.visibility = "hidden";
+    if (!data.winnerBlau && !data.unentschieden) {
+      pweis.classList.remove("blinkanim"); // Remove animation if no winner
+    }
+  }
+  
+  if (data.unentschieden) {
+    wu.classList.add("blinkanim");
+    wu.style.visibility = "visible";
+    pweis.classList.add("blinkanim"); // Add animation to both points for tie
+    pblau.classList.add("blinkanim");
+  } else {
+    wu.classList.remove("blinkanim");
+    wu.style.visibility = "hidden";
+    if (!data.winnerBlau && !data.winnerWeis) {
+      pweis.classList.remove("blinkanim"); // Remove animation if no winner
+      pblau.classList.remove("blinkanim");
+    }
+  }
+  
+  // Handle matte animation
+  if (data.showMatteAnimation !== undefined) {
+    const animationElement = document.getElementById('matteAnimation');
+    const numberElement = document.getElementById('animationMatteNumber');
+    
+    if (animationElement && numberElement) {
+      if (data.showMatteAnimation) {
+        if (data.matteNumber) {
+          numberElement.textContent = data.matteNumber;
+        }
+        animationElement.classList.remove('hidden');
+      } else {
+        animationElement.classList.add('hidden');
+      }
+    }
+  }
+});
+
+
+    } else {
+      // This is the main window - send updates to the secondary window
+      
+      // Replace the original anzeigeOffnen function
+      anzeigeOffnen = function() {
+        ipcRenderer.send('open-display');
+      };
+      
+      // Function to gather all current state data
+      function getCurrentState() {
+  return {
+    punkteblau: punkteblau,
+    punkteweis: punkteweis,
+    timer: timer.innerHTML,
+    timerColor: timer.style.color,
+    halteTimerW: hweis.innerHTML,
+    halteTimerB: hblau.innerHTML,
+    matte: matteinput.value,
+    headline: document.querySelector('.headline').textContent,
+    winnerBlau: winnerblau,
+    winnerWeis: winnerweis,
+    unentschieden: unentschieden,
+    showMatteAnimation: document.getElementById('kampfStartenButton') && 
+                        !document.getElementById('kampfStartenButton').classList.contains('hidden'),
+    matteNumber: matteinput.value || "1"
+  };
+}
+
+
+      
+      // Send current state when secondary window is ready
+      ipcRenderer.on('secondary-ready', () => {
+        ipcRenderer.send('update-display', getCurrentState());
+      });
+      
+      // Function to sync with secondary window
+      function syncWithSecondary() {
+        ipcRenderer.send('update-display', getCurrentState());
+      }
+      
+      // Modify update functions to sync with secondary window
+      const originalUpdatePunkteB = updatePunkteB;
+      updatePunkteB = function() {
+        originalUpdatePunkteB();
+        syncWithSecondary();
+      };
+      
+      const originalUpdatePunkteW = updatePunkteW;
+      updatePunkteW = function() {
+        originalUpdatePunkteW();
+        syncWithSecondary();
+      };
+      
+      const originalUpdateHauptTimer = updateHauptTimer;
+      updateHauptTimer = function() {
+        originalUpdateHauptTimer();
+        syncWithSecondary();
+      };
+      
+      const originalUpdateHalteTimerW = updateHalteTimerW;
+      updateHalteTimerW = function() {
+        originalUpdateHalteTimerW();
+        syncWithSecondary();
+      };
+      
+      const originalUpdateHalteTimerB = updateHalteTimerB;
+      updateHalteTimerB = function() {
+        originalUpdateHalteTimerB();
+        syncWithSecondary();
+      };
+      
+      const originalUpdateMatte = updateMatte;
+      updateMatte = function() {
+        originalUpdateMatte();
+        syncWithSecondary();
+      };
+      
+      // Set up timer to periodically sync (handles cases where updates might be missed)
+      setInterval(syncWithSecondary, 100);
+    }
+  });
+}
+// Check if Electron is available
+if (typeof require !== 'undefined') {
+  const { ipcRenderer } = require('electron');
+  
+  // Set up zoom controls
+  window.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode');
+    
+    if (!mode) {  // Only add zoom controls to main window
+      // Set up zoom buttons
+      document.getElementById('zoom-in').addEventListener('click', () => {
+        ipcRenderer.send('zoom-in');
+      });
+      
+      document.getElementById('zoom-out').addEventListener('click', () => {
+        ipcRenderer.send('zoom-out');
+      });
+      
+      document.getElementById('zoom-reset').addEventListener('click', () => {
+        ipcRenderer.send('zoom-reset');
+      });
+    }
+  });
+}
+// Add this at the end of your script section, just before the closing 
+// Initialize zoom controls after the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+
+  // Check if we're in Electron
+  if (typeof require !== 'undefined') {
+    try {
+      const { ipcRenderer } = require('electron');
+      
+      // Get the zoom buttons
+      const zoomInBtn = document.getElementById('zoom-in');
+      const zoomOutBtn = document.getElementById('zoom-out');
+      const zoomResetBtn = document.getElementById('zoom-reset');
+            
+      // Add click handlers if the buttons exist
+      if (zoomInBtn) {
+        zoomInBtn.addEventListener('click', function() {
+          console.log('Zoom in clicked');
+          ipcRenderer.send('zoom-in');
+        });
+      }
+      
+      if (zoomOutBtn) {
+        zoomOutBtn.addEventListener('click', function() {
+          console.log('Zoom out clicked');
+          ipcRenderer.send('zoom-out');
+        });
+      }
+      
+      if (zoomResetBtn) {
+        zoomResetBtn.addEventListener('click', function() {
+          console.log('Zoom reset clicked');
+          ipcRenderer.send('zoom-reset');
+        });
+      }
+    } catch (error) {
+      console.error('Error setting up zoom controls:', error);
+    }
+  }
+});
+const kampfStartenButton = document.getElementById('kampfStartenButton');
+        if (kampfStartenButton) {
+            kampfStartenButton.addEventListener('click', startKampf);
+        }
+        
+// Function to show the Matten Nummer modal
+function showMattenModal() {
+  const modal = document.getElementById('mattenModal');
+  const input = document.getElementById('mattenNummerInput');
+  const submitBtn = document.getElementById('mattenNummerSubmit');
+  
+  if (modal) {
+    modal.style.display = 'block';
+    
+    // Focus the input field
+    if (input) {
+      input.focus();
+    }
+    
+    // Handle submit button click
+    if (submitBtn) {
+      submitBtn.onclick = function() {
+        submitMattenNummer();
+      };
+    }
+    
+    // Also submit when Enter key is pressed
+    if (input) {
+      input.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          submitMattenNummer();
+        }
+      });
+    }
+  }
+}
+
+// Function to handle the submission of the Matten Nummer
+function submitMattenNummer() {
+  const input = document.getElementById('mattenNummerInput');
+  const modal = document.getElementById('mattenModal');
+  const headline = document.querySelector('.headline');
+  
+  if (input && input.value && !isNaN(parseInt(input.value))) {
+    const mattenNummer = parseInt(input.value);
+    
+    // Update the headline
+    if (headline) {
+      headline.textContent = `Matte ${mattenNummer}`;
+    }
+    
+    // Update matteinput field for compatibility with existing code
+    const matteInput = document.getElementById('matteinput');
+    if (matteInput) {
+      matteInput.value = mattenNummer;
+      // Trigger the change event to ensure any existing handlers run
+      const event = new Event('change');
+      matteInput.dispatchEvent(event);
+    }
+    
+    // Hide the modal
+    if (modal) {
+      modal.style.display = 'none';
+    }
+    
+    // Immediately sync with secondary display if using Electron
+    if (typeof require !== 'undefined') {
+      try {
+        const { ipcRenderer } = require('electron');
+        ipcRenderer.send('update-display', getCurrentState());
+      } catch (error) {
+        console.error('Error updating secondary window:', error);
+      }
+    }
+  }
+}
+
+
+// Show the modal when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+  // Hide the original matteinput field since we're using the modal
+  const matteInput = document.getElementById('matteinput');
+  if (matteInput) {
+    matteInput.style.display = 'none';
+  }
+  
+  // Only show the modal on the main window
+  const urlParams = new URLSearchParams(window.location.search);
+  const mode = urlParams.get('mode');
+  
+  if (!mode) {
+    showMattenModal();
+  }
+});
+
+// Update the secondary window's header when it receives the matte number
+if (typeof require !== 'undefined') {
+  const { ipcRenderer } = require('electron');
+  
+  ipcRenderer.on('update-from-main', (event, data) => {
+  // Existing update code...
+  
+  // Handle matte animation
+  if (data.showMatteAnimation !== undefined) {
+    const animationElement = document.getElementById('matteAnimation');
+    const numberElement = document.getElementById('animationMatteNumber');
+    
+    if (animationElement && numberElement) {
+      if (data.showMatteAnimation) {
+        if (data.matteNumber) {
+          numberElement.textContent = data.matteNumber;
+        }
+        animationElement.classList.remove('hidden');
+      } else {
+        animationElement.classList.add('hidden');
+      }
+    }
+  }
+});
+
+}
+
+
+    </script>
+</head>
+
+<body class= "background">
+    <div id="mattenModal" class="modal">
+        <div class="modal-content">
+          <h2>Matten Nummer eingeben</h2>
+          <input type="number" id="mattenNummerInput" min="1" placeholder="Nummer eingeben..." autofocus>
+          <button id="mattenNummerSubmit">Bestätigen</button>
+        </div>
+      </div>
+      
+    <audio id="buzzer" src="audio.mp3" type="audio/mpeg"></audio>
+    <div id="matteAnimation" class="hidden">
+        <div class="matte-animation">
+          <div class="animation-bg">
+          </div>
+          <div class="matte-number">Matte <span id="animationMatteNumber">1</span></div>
+        </div>
+      </div>
+      
+    <header class= "headline">Matte</header>
+    <div class="zoom-controls onlymain">
+        <button id="zoom-out" class="zoom-button" title="Zoom out display">-</button>
+        <button id="zoom-reset" class="zoom-button" title="Reset display zoom">⟳</button>
+        <button id="zoom-in" class="zoom-button" title="Zoom in display">+</button>
+        <button id="show-animation" class="animation-button" onclick="playMatteAnimation()">Pause ☕</button>
+
+      </div>   
+      <button id="kampfStartenButton" class="kampfStartenButton onlymain hidden" onclick="startKampf()">Kampf starten</button>
+
+  
+    <input id="matteinput" class="matteinput input" placeholder="Matten Nr." onchange="updateMatte()"></input>
+    <div onclick= "haltenweis()" class="haltenweis" id="hweis">00</div>
+    <div onclick= "haltenblau()" class="haltenblau" id="hblau">00</div>
+    <div  class ="punkteweis" id="pweis">00</div>
+    <div  class ="punkteblau" id="pblau">00</div>
+    <div onclick="fzeitlauft()" class="place1" id="timer">2 : 00</div>
+    <div class="blau"></div>
+    <div class= "winnerb" id=wb>Winner</div>
+    <div class= "winnerw"id=ww>Winner</div>
+    <div class="winneru" id=wu>Unentschieden</div>
+    <div class="controls onlymain">
+        <div onclick = "haltenweis()" class="haltebweis onlymain">H</div>
+        <div onclick = "haltenblau()" class="haltebblau onlymain">H</div>
+        <div onclick = "ipponblau()" class="ipponb onlymain">I</div>
+        <div onclick = "ipponweis()" class="ipponw onlymain">I</div>
+        <div onclick = "wazariblau()" class="wazarib onlymain">W</div>
+        <div onclick = "wazariweis()" class="wazariw onlymain">W</div>
+        <div onclick = "shidoblau()" class="shidob onlymain">S</div>
+        <div onclick = "shidoweis()" class="shidow onlymain">S</div>
+        <div onclick = "yukoblau()" class="yukob onlymain">Y</div>
+        <div onclick = "yukoweis()" class="yukow onlymain">Y</div>
+        <div onclick = "minusblau()" class="minusb onlymain">Z</div>
+        <div onclick = "minusweis()" class="minusw onlymain">Z</div>
+        <div onclick = "punktebenull()" class="punktebn onlymain">0</div>
+        <div onclick = "punktewenull()" class="punktewn onlymain">0</div>
+        <button id="weiterbutton" class="weiterbutton hidden onlymain" onclick="buttonweiter()">Weiter</button>
+    </div>
+    <div class="timercontrols onlymain">
+        <div onclick = "resetHauptTimer()" class="haupttimerreset onlymain">0</div>
+        <input id="haupttimerinput" class="haupttimerinput input onlymain" onchange="setKampfZeit()" pattern="\s*\d+\s*:\s*[0-5]?\d\s*" value="2 : 00" required></input>
+        <div onclick = "fzeitlauft()" class="pause onlymain">P</div>
+    </div>
+ </body>
+ </html>
